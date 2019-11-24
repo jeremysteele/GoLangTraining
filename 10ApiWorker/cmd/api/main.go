@@ -10,6 +10,10 @@ import (
 	"github.com/jeremysteele/GoLangTraining/10ApiWorker/models"
 )
 
+type responseMessage struct {
+	Message string `json:"message"`
+}
+
 func addPerson(w http.ResponseWriter, req *http.Request) {
 	client := internal.GetRedisClient()
 
@@ -36,9 +40,14 @@ func addPerson(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	fmt.Fprintf(w, "added person to queue\n")
+	response := responseMessage{Message: "Added person to queue"}
+
+	responseJSON, _ := json.Marshal(response)
+
+	fmt.Fprintf(w, string(responseJSON))
 }
 
 func getPeople(w http.ResponseWriter, req *http.Request) {
