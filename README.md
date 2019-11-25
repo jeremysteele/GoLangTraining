@@ -1,2 +1,2 @@
 # GoLangTraining
-Training examples for my adventure in learning Go!
+Some example go apps. That is all. 
