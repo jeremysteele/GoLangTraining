@@ -21,24 +21,20 @@ func populateTmpFile(file string, mbSize int) (string, error) {
 }
 
 // Sets up needed tmp files
-func setupTmpFiles() ([]string, error) {
+func setupTmpFiles(fileConfigs map[string]int) ([]string, error) {
 	files := []string{}
 
-	_, err := populateTmpFile("/tmp/testfile", 100)
+	for name, size := range fileConfigs {
+		fullPath := "/tmp/" + name
 
-	if err != nil {
-		return nil, err
+		_, err := populateTmpFile(fullPath, size)
+
+		if err != nil {
+			return nil, err
+		}
+
+		files = append(files, fullPath)
 	}
-
-	files = append(files, "/tmp/testfile")
-
-	_, err = populateTmpFile("/tmp/testfile2", 200)
-
-	if err != nil {
-		return nil, err
-	}
-
-	files = append(files, "/tmp/testfile2")
 
 	return files, nil
 }
@@ -68,7 +64,7 @@ func writeToZip(zw *zip.Writer, file string) error {
 }
 
 func main() {
-	tmpFiles, err := setupTmpFiles()
+	tmpFiles, err := setupTmpFiles(map[string]int{"file1": 100, "file2": 200})
 
 	if err != nil {
 		panic(err)
@@ -89,7 +85,6 @@ func main() {
 			}
 		}
 
-		// close the zip Writer to flush the contents to the ResponseWriter
 		err = zw.Close()
 		if err != nil {
 			log.Fatal(err)
